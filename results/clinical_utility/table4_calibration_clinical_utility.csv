@@ -1,0 +1,3 @@
+Model,Cohort,Calibration intercept,Calibration slope,Brier score,DCA useful threshold range
+XGBoost cross-database,MIMIC-IV internal test,0.089,0.944,0.194,0.11-0.75
+XGBoost cross-database,MIMIC-III temporal/external validation,-0.230,0.866,0.197,0.12-0.75
