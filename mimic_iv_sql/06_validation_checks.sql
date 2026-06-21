@@ -1,0 +1,125 @@
+-- Validation and quality-control checks for the MIMIC-IV S-AKI dynamic prediction dataset.
+-- Run this after 05_modeling_dataset.sql.
+
+-- 1. Cohort attrition.
+SELECT 'base_icu' AS step, COUNT(*) AS n_rows, COUNT(DISTINCT stay_id) AS n_stays
+FROM saki_dynamic.base_icu
+UNION ALL
+SELECT 'sepsis_icu', COUNT(*), COUNT(DISTINCT stay_id)
+FROM saki_dynamic.sepsis_icu
+UNION ALL
+SELECT 'saki_onset', COUNT(*), COUNT(DISTINCT stay_id)
+FROM saki_dynamic.saki_onset
+UNION ALL
+SELECT 'landmarks_raw', COUNT(*), COUNT(DISTINCT stay_id)
+FROM saki_dynamic.landmarks_raw
+UNION ALL
+SELECT 'eligible_landmarks', COUNT(*), COUNT(DISTINCT stay_id)
+FROM saki_dynamic.landmarks
+UNION ALL
+SELECT 'modeling_dataset', COUNT(*), COUNT(DISTINCT stay_id)
+FROM saki_dynamic.modeling_dataset;
+
+-- 2. Landmark distribution and primary outcome event rate.
+SELECT
+    landmark_hour,
+    COUNT(*) AS n_rows,
+    COUNT(DISTINCT stay_id) AS n_stays,
+    SUM(aki_progression_48h) AS n_events,
+    AVG(aki_progression_48h::numeric) AS event_rate
+FROM saki_dynamic.modeling_dataset
+GROUP BY landmark_hour
+ORDER BY landmark_hour;
+
+-- 3. Current KDIGO stage at landmark.
+SELECT
+    landmark_hour,
+    current_kdigo,
+    COUNT(*) AS n_rows,
+    AVG(aki_progression_48h::numeric) AS event_rate
+FROM saki_dynamic.modeling_dataset
+GROUP BY landmark_hour, current_kdigo
+ORDER BY landmark_hour, current_kdigo;
+
+-- 4. Time-order checks.
+SELECT
+    COUNT(*) AS n_time_order_violations
+FROM saki_dynamic.modeling_dataset
+WHERE NOT (
+    icu_intime <= sepsis_onset_time
+    AND sepsis_onset_time <= saki_onset_time
+    AND saki_onset_time < landmark_time
+    AND landmark_time <= icu_outtime
+);
+
+-- 5. Prediction window availability.
+SELECT
+    COUNT(*) AS n_rows_without_full_48h_icu_followup
+FROM saki_dynamic.modeling_dataset
+WHERE landmark_time + INTERVAL '48 hour' > icu_outtime;
+
+-- 6. Main exclusion check: no KDIGO 3 or prior RRT should remain.
+SELECT
+    COUNT(*) AS n_invalid_landmark_rows
+FROM saki_dynamic.landmarks
+WHERE current_kdigo NOT IN (1, 2)
+   OR prior_rrt = 1;
+
+-- 7. Predictor missingness overview.
+SELECT
+    AVG(CASE WHEN creatinine_recent IS NULL THEN 1 ELSE 0 END::numeric) AS creatinine_recent_missing,
+    AVG(CASE WHEN bun_recent IS NULL THEN 1 ELSE 0 END::numeric) AS bun_recent_missing,
+    AVG(CASE WHEN lactate_max IS NULL THEN 1 ELSE 0 END::numeric) AS lactate_missing,
+    AVG(CASE WHEN platelet_min IS NULL THEN 1 ELSE 0 END::numeric) AS platelet_missing,
+    AVG(CASE WHEN map_mean IS NULL THEN 1 ELSE 0 END::numeric) AS map_missing,
+    AVG(CASE WHEN urine_output_total IS NULL THEN 1 ELSE 0 END::numeric) AS urine_output_missing,
+    AVG(CASE WHEN sofa_max IS NULL THEN 1 ELSE 0 END::numeric) AS sofa_missing
+FROM saki_dynamic.modeling_dataset;
+
+-- 8. Missingness by landmark.
+SELECT
+    landmark_hour,
+    AVG(CASE WHEN creatinine_recent IS NULL THEN 1 ELSE 0 END::numeric) AS creatinine_recent_missing,
+    AVG(CASE WHEN lactate_max IS NULL THEN 1 ELSE 0 END::numeric) AS lactate_missing,
+    AVG(CASE WHEN urine_output_total IS NULL THEN 1 ELSE 0 END::numeric) AS urine_output_missing,
+    AVG(CASE WHEN sofa_max IS NULL THEN 1 ELSE 0 END::numeric) AS sofa_missing
+FROM saki_dynamic.modeling_dataset
+GROUP BY landmark_hour
+ORDER BY landmark_hour;
+
+-- 9. Physiologic range checks for selected predictors.
+SELECT
+    MIN(age) AS age_min,
+    MAX(age) AS age_max,
+    MIN(creatinine_recent) AS creatinine_recent_min,
+    MAX(creatinine_recent) AS creatinine_recent_max,
+    MIN(bun_recent) AS bun_recent_min,
+    MAX(bun_recent) AS bun_recent_max,
+    MIN(map_min) AS map_min_min,
+    MAX(map_mean) AS map_mean_max,
+    MIN(temp_min) AS temp_min_min,
+    MAX(temp_max) AS temp_max_max,
+    MIN(platelet_min) AS platelet_min_min,
+    MAX(platelet_min) AS platelet_min_max
+FROM saki_dynamic.modeling_dataset;
+
+-- 10. Duplicate row check.
+SELECT
+    stay_id,
+    landmark_time,
+    COUNT(*) AS n
+FROM saki_dynamic.modeling_dataset
+GROUP BY stay_id, landmark_time
+HAVING COUNT(*) > 1
+ORDER BY n DESC;
+
+-- 11. Outcome component check: distinguish KDIGO progression vs future RRT.
+SELECT
+    landmark_hour,
+    SUM(CASE WHEN future_rrt = 1 THEN 1 ELSE 0 END) AS n_future_rrt,
+    SUM(CASE WHEN current_kdigo = 1 AND future_max_kdigo >= 2 THEN 1 ELSE 0 END) AS n_stage1_to_2plus,
+    SUM(CASE WHEN current_kdigo = 2 AND future_max_kdigo >= 3 THEN 1 ELSE 0 END) AS n_stage2_to_3
+FROM saki_dynamic.landmarks
+GROUP BY landmark_hour
+ORDER BY landmark_hour;
+
