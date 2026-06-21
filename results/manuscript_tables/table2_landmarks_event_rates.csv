@@ -1,0 +1,10 @@
+Cohort,Landmark,Rows,Unique ICU stays,AKI progression events,Event rate,Future CRRT/RRT rate
+MIMIC-IV,24 h,3395,3395,1551,45.7%,Included in outcome
+MIMIC-IV,48 h,2061,2061,925,44.9%,Included in outcome
+MIMIC-IV,72 h,1427,1427,652,45.7%,Included in outcome
+MIMIC-III with CRRT,24 h,1875,1875,807,43.0%,2.0%
+MIMIC-III with CRRT,48 h,1274,1274,548,43.0%,2.2%
+MIMIC-III with CRRT,72 h,913,913,407,44.6%,2.6%
+SICdb sensitivity,24 h,301,301,71,23.6%,8.0%
+SICdb sensitivity,48 h,217,217,29,13.4%,2.8%
+SICdb sensitivity,72 h,167,167,28,16.8%,4.8%
