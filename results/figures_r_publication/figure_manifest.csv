@@ -1,0 +1,7 @@
+"figure","svg","png","tiff","pdf"
+"fig1_cohort_flow","fig1_cohort_flow.svg","fig1_cohort_flow.png","fig1_cohort_flow.tiff","fig1_cohort_flow.pdf"
+"fig2_performance_forest","fig2_performance_forest.svg","fig2_performance_forest.png","fig2_performance_forest.tiff","fig2_performance_forest.pdf"
+"fig3_calibration","fig3_calibration.svg","fig3_calibration.png","fig3_calibration.tiff","fig3_calibration.pdf"
+"fig4_decision_curve","fig4_decision_curve.svg","fig4_decision_curve.png","fig4_decision_curve.tiff","fig4_decision_curve.pdf"
+"fig5_xgboost_importance","fig5_xgboost_importance.svg","fig5_xgboost_importance.png","fig5_xgboost_importance.tiff","fig5_xgboost_importance.pdf"
+"fig6_xgboost_dependence","fig6_xgboost_dependence.svg","fig6_xgboost_dependence.png","fig6_xgboost_dependence.tiff","fig6_xgboost_dependence.pdf"
