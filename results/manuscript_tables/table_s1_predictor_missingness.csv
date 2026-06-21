@@ -1,0 +1,11 @@
+Feature,MIMIC-IV missing %,MIMIC-III missing %,SICdb missing %
+Creatinine recent,0.7%,0.7%,0.0%
+BUN recent,0.7%,0.7%,0.0%
+Lactate maximum,33.6%,38.6%,9.5%
+Platelet minimum,1.0%,1.0%,1.5%
+MAP mean,0.1%,1.2%,9.2%
+Urine output total,1.3%,7.5%,12.0%
+SOFA score,0.0%,0.0%,100.0%
+Systolic BP mean,0.1%,1.2%,9.2%
+SpO2 minimum,0.1%,1.1%,9.2%
+pH minimum,19.8%,11.8%,9.8%
