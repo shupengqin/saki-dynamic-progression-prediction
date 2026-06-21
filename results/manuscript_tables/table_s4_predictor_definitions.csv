@@ -1,0 +1,45 @@
+Predictor,Domain,Definition,Unit,Observation window,Model aggregation,Cross-database harmonization notes
+gender,demographic,Biological sex encoded for modeling,binary/category,baseline,direct,Encoded consistently before modeling.
+age,demographic,Age at ICU admission,years,baseline,value,May need de-identification handling in MIMIC-IV
+landmark_hour,time,Prediction landmark after S-AKI onset,hours,landmark,direct,
+current_kdigo,kidney,KDIGO stage at landmark,stage,before landmark,latest,Key dynamic predictor
+current_or_prior_max_kdigo,kidney,Maximum KDIGO stage observed up to and including the landmark,stage,S-AKI onset to landmark,direct,
+heart_rate_mean,vital,Heart rate,bpm,S-AKI onset to landmark,mean,Dynamic marker
+heart_rate_max,vital,Heart rate,bpm,S-AKI onset to landmark,maximum,Dynamic marker
+sbp_mean,vital,Systolic blood pressure,mmHg,S-AKI onset to landmark,mean,Use invasive/non-invasive hierarchy
+sbp_min,vital,Systolic blood pressure,mmHg,S-AKI onset to landmark,minimum,Use invasive/non-invasive hierarchy
+dbp_mean,vital,Diastolic blood pressure,mmHg,S-AKI onset to landmark,mean,Use invasive/non-invasive hierarchy
+dbp_min,vital,Diastolic blood pressure,mmHg,S-AKI onset to landmark,minimum,Use invasive/non-invasive hierarchy
+map_mean,vital,Mean arterial pressure,mmHg,S-AKI onset to landmark,mean,Include recent mean and minimum
+map_min,vital,Mean arterial pressure,mmHg,S-AKI onset to landmark,minimum,Include recent mean and minimum
+resp_rate_mean,vital,Respiratory rate,breaths/min,S-AKI onset to landmark,mean,Dynamic marker
+resp_rate_max,vital,Respiratory rate,breaths/min,S-AKI onset to landmark,maximum,Dynamic marker
+temp_mean,vital,Body temperature,degC,S-AKI onset to landmark,mean,Convert Fahrenheit to Celsius if needed Temperature harmonized to degrees Celsius.
+temp_min,vital,Body temperature,degC,S-AKI onset to landmark,minimum,Convert Fahrenheit to Celsius if needed Temperature harmonized to degrees Celsius.
+temp_max,vital,Body temperature,degC,S-AKI onset to landmark,maximum,Convert Fahrenheit to Celsius if needed Temperature harmonized to degrees Celsius.
+spo2_mean,vital,Oxygen saturation,percent,S-AKI onset to landmark,mean,Dynamic oxygenation marker
+spo2_min,vital,Oxygen saturation,percent,S-AKI onset to landmark,minimum,Dynamic oxygenation marker
+creatinine_recent,kidney,Most recent serum creatinine before landmark,mg/dL,S-AKI onset to landmark,most recent,Convert umol/L to mg/dL when needed
+creatinine_max,kidney,Maximum serum creatinine before landmark,mg/dL,S-AKI onset to landmark,maximum,Dynamic kidney injury severity
+bun_recent,kidney,Most recent blood urea nitrogen before landmark,mg/dL,S-AKI onset to landmark,most recent,Convert units if needed SICdb urea (Harnstoff) converted to BUN using urea x 0.467.
+bun_max,kidney,Most recent blood urea nitrogen before landmark,mg/dL,S-AKI onset to landmark,maximum,Convert units if needed SICdb urea (Harnstoff) converted to BUN using urea x 0.467.
+bicarbonate_min,lab,Bicarbonate,mmol/L,S-AKI onset to landmark,minimum,Acid-base status
+sodium_min,lab,Sodium,mmol/L,S-AKI onset to landmark,minimum,Electrolyte
+sodium_max,lab,Sodium,mmol/L,S-AKI onset to landmark,maximum,Electrolyte
+potassium_min,lab,Potassium,mmol/L,S-AKI onset to landmark,minimum,Electrolyte
+potassium_max,lab,Potassium,mmol/L,S-AKI onset to landmark,maximum,Electrolyte
+chloride_min,lab,Chloride,mmol/L,S-AKI onset to landmark,minimum,Electrolyte
+chloride_max,lab,Chloride,mmol/L,S-AKI onset to landmark,maximum,Electrolyte
+wbc_max,lab,White blood cell count,10^9/L,S-AKI onset to landmark,maximum,Inflammation marker
+hemoglobin_min,lab,Hemoglobin,g/dL,S-AKI onset to landmark,minimum,Anemia/illness marker
+platelet_min,lab,Platelet count,10^9/L,S-AKI onset to landmark,minimum,Coagulation/sepsis marker
+hematocrit_min,lab,Hematocrit,percent,S-AKI onset to landmark,direct,Complete blood count marker.
+lactate_max,lab,Lactate,mmol/L,S-AKI onset to landmark,maximum,Sepsis severity
+ph_min,lab,Arterial or venous pH,pH,S-AKI onset to landmark,minimum,Prefer arterial if both available
+urine_output_total,kidney,Total urine output before landmark,mL,S-AKI onset to landmark,sum,First-pass SQL feature; not weight-normalized
+urine_output_count,kidney,Number of urine output records before landmark,count,S-AKI onset to landmark,count,Helps distinguish no output from no documentation
+mechanical_ventilation,treatment,Mechanical ventilation before landmark,binary,S-AKI onset to landmark,any,Harmonize invasive ventilation if possible
+vasopressor,treatment,Any vasopressor before landmark,binary,S-AKI onset to landmark,any,Shock marker
+creatinine_missing,missingness,No creatinine before landmark,binary,S-AKI onset to landmark,missingness indicator,Missingness indicator
+bun_missing,missingness,No BUN measurement before landmark,binary,S-AKI onset to landmark,direct,
+lactate_missing,missingness,No lactate before landmark,binary,S-AKI onset to landmark,missingness indicator,Missingness indicator
