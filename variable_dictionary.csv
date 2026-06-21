@@ -1,0 +1,62 @@
+domain,variable_name,definition,unit,observation_window,aggregation,mimic_iv_source,eicu_source,sicdb_source,notes
+identifier,subject_id,Patient identifier,NA,NA,NA,patients,patient,patient,Use local database-specific identifier
+identifier,hadm_id,Hospital admission identifier,NA,NA,NA,admissions,patient,case,May be unavailable or named differently outside MIMIC-IV
+identifier,stay_id,ICU stay identifier,NA,NA,NA,icustays,patientunitstayid,caseid,Primary ICU stay key
+time,saki_onset_time,First time meeting both sepsis and AKI criteria,datetime,NA,derived,sepsis3 + kdigo_stages,derived,derived,Core index time
+time,landmark_time,Prediction landmark time,datetime,NA,derived,derived,derived,derived,24/48/72 h after S-AKI onset
+outcome,aki_progression_48h,KDIGO stage progression or new RRT within 48 h,binary,landmark to landmark+48h,max/future event,kdigo_stages + rrt,derived from lab/intakeOutput/treatment,KDIGO_AKI_168 + therapy,Primary outcome
+outcome,new_rrt_48h,New RRT/CRRT within 48 h,binary,landmark to landmark+48h,any,rrt/crrt concepts,treatment/intakeOutput,therapy/medication/procedure,Secondary outcome
+outcome,kidney_nonrecovery,Kidney non-recovery by discharge or day 7,binary,post-landmark,last available,creatinine + rrt + death,lab + discharge + treatment,laboratory + outcome,Secondary outcome
+demographic,age,Age at ICU admission,years,baseline,value,patients/admissions,patient,case,May need de-identification handling in MIMIC-IV
+demographic,sex,Biological sex,category,baseline,value,patients,patient,patient,Use consistent male/female coding
+demographic,weight,Body weight,kg,before landmark,nearest/median,weight_durations,chartevents/nurseCharting,observations,Needed for urine output rate
+baseline,icu_type,First ICU unit type,category,baseline,value,icustays,patient,case,Map to broad ICU categories
+baseline,admission_type,Hospital admission type,category,baseline,value,admissions,patient,case,Emergency/elective/urgent if available
+comorbidity,ckd,Pre-existing chronic kidney disease,binary,baseline,diagnosis flag,diagnoses_icd,diagnosis,diagnosis,Important subgroup and confounder
+comorbidity,diabetes,Diabetes mellitus,binary,baseline,diagnosis flag,diagnoses_icd,diagnosis,diagnosis,Charlson component
+comorbidity,heart_failure,Congestive heart failure,binary,baseline,diagnosis flag,diagnoses_icd,diagnosis,diagnosis,Charlson component
+comorbidity,liver_disease,Chronic liver disease,binary,baseline,diagnosis flag,diagnoses_icd,diagnosis,diagnosis,Charlson component
+comorbidity,malignancy,Malignancy,binary,baseline,diagnosis flag,diagnoses_icd,diagnosis,diagnosis,Charlson component
+comorbidity,charlson,Charlson comorbidity index,score,baseline,value,charlson concept,apache/pastHistory/diagnosis,diagnosis,Use harmonized implementation if possible
+severity,sofa,Sequential Organ Failure Assessment score,score,before landmark,latest/max,sofa concept,derived,derived,Important predictor and sepsis definition
+severity,oasis,Oxford Acute Severity of Illness Score,score,first 24h or before landmark,value,oasis concept,NA/derived,derived if feasible,Use when available across enough databases
+severity,sapsii,Simplified Acute Physiology Score II,score,first 24h or before landmark,value,sapsii concept,NA/derived,derived if feasible,May not map cleanly in eICU
+severity,apache,APACHE score or components,score,baseline,value,NA,apacheApsVar/apachePatientResult,NA,Use only for eICU-specific descriptive analysis unless harmonized
+kidney,current_kdigo,KDIGO stage at landmark,stage,before landmark,latest,kdigo_stages,derived,KDIGO_AKI_168,Key dynamic predictor
+kidney,max_kdigo_prior,Maximum KDIGO stage before landmark,stage,S-AKI onset to landmark,max,kdigo_stages,derived,KDIGO_AKI_168,Exclude max stage 3 in main progression model
+kidney,creatinine_recent,Most recent serum creatinine before landmark,mg/dL,S-AKI onset to landmark,latest,labevents/lab concepts,lab,laboratory,Convert umol/L to mg/dL when needed
+kidney,creatinine_max,Maximum serum creatinine before landmark,mg/dL,S-AKI onset to landmark,max,labevents/lab concepts,lab,laboratory,Dynamic kidney injury severity
+kidney,creatinine_slope,Creatinine change rate before landmark,mg/dL/day,S-AKI onset to landmark,slope,labevents/lab concepts,lab,laboratory,Fit simple linear slope if >=2 values
+kidney,bun_recent,Most recent blood urea nitrogen before landmark,mg/dL,S-AKI onset to landmark,latest,labevents/lab concepts,lab,laboratory,Convert units if needed
+kidney,urine_output_total,Total urine output before landmark,mL,S-AKI onset to landmark,sum,outputevents/urine_output,intakeOutput,outputs,First-pass SQL feature; not weight-normalized
+kidney,urine_output_count,Number of urine output records before landmark,count,S-AKI onset to landmark,count,outputevents/urine_output,intakeOutput,outputs,Helps distinguish no output from no documentation
+kidney,urine_output_rate_min,Minimum urine output rate before landmark,mL/kg/h,S-AKI onset to landmark,min,outputevents/urine_output,intakeOutput,outputs,Use weight-normalized rate
+kidney,oliguria_duration,Duration of urine output <0.5 mL/kg/h,hours,S-AKI onset to landmark,sum/longest run,urine_output_rate,intakeOutput,outputs,Important dynamic renal signal
+vital,map,Mean arterial pressure,mmHg,S-AKI onset to landmark,recent/mean/min,vitalsign,vitalPeriodic,observations,Include recent mean and minimum
+vital,sbp,Systolic blood pressure,mmHg,S-AKI onset to landmark,recent/mean/min,vitalsign,vitalPeriodic,observations,Use invasive/non-invasive hierarchy
+vital,dbp,Diastolic blood pressure,mmHg,S-AKI onset to landmark,recent/mean/min,vitalsign,vitalPeriodic,observations,Use invasive/non-invasive hierarchy
+vital,heart_rate,Heart rate,bpm,S-AKI onset to landmark,recent/mean/max,vitalsign,vitalPeriodic,observations,Dynamic marker
+vital,resp_rate,Respiratory rate,breaths/min,S-AKI onset to landmark,recent/mean/max,vitalsign,vitalPeriodic,observations,Dynamic marker
+vital,temp,Body temperature,degC,S-AKI onset to landmark,recent/min/max,vitalsign,vitalPeriodic,observations,Convert Fahrenheit to Celsius if needed
+vital,spo2,Oxygen saturation,percent,S-AKI onset to landmark,recent/mean/min,vitalsign,vitalPeriodic,observations,Dynamic oxygenation marker
+lab,lactate,Lactate,mmol/L,S-AKI onset to landmark,recent/max,bg/labevents,lab,laboratory,Sepsis severity
+lab,ph,Arterial or venous pH,pH,S-AKI onset to landmark,recent/min,bg/labevents,lab,laboratory,Prefer arterial if both available
+lab,bicarbonate,Bicarbonate,mmol/L,S-AKI onset to landmark,recent/min,chemistry,lab,laboratory,Acid-base status
+lab,sodium,Sodium,mmol/L,S-AKI onset to landmark,recent/min/max,chemistry,lab,laboratory,Electrolyte
+lab,potassium,Potassium,mmol/L,S-AKI onset to landmark,recent/min/max,chemistry,lab,laboratory,Electrolyte
+lab,chloride,Chloride,mmol/L,S-AKI onset to landmark,recent/min/max,chemistry,lab,laboratory,Electrolyte
+lab,wbc,White blood cell count,10^9/L,S-AKI onset to landmark,recent/max,cbc,lab,laboratory,Inflammation marker
+lab,hemoglobin,Hemoglobin,g/dL,S-AKI onset to landmark,recent/min,cbc,lab,laboratory,Anemia/illness marker
+lab,platelet,Platelet count,10^9/L,S-AKI onset to landmark,recent/min,cbc,lab,laboratory,Coagulation/sepsis marker
+lab,bilirubin,Total bilirubin,mg/dL,S-AKI onset to landmark,recent/max,chemistry,lab,laboratory,SOFA liver component
+lab,inr,International normalized ratio,ratio,S-AKI onset to landmark,recent/max,coagulation,lab,laboratory,Coagulation marker
+treatment,mechanical_ventilation,Mechanical ventilation before landmark,binary,S-AKI onset to landmark,any,ventilation concept,respiratoryCharting/treatment,observations/procedures,Harmonize invasive ventilation if possible
+treatment,vasopressor,Any vasopressor before landmark,binary,S-AKI onset to landmark,any,inputevents/vasoactive_agent,infusionDrug,medication,Shock marker
+treatment,norepinephrine_equiv,Norepinephrine equivalent dose,ug/kg/min,S-AKI onset to landmark,max/mean,inputevents,infusionDrug,medication,Optional if harmonization feasible
+treatment,fluid_input,Total fluid input before landmark,mL,S-AKI onset to landmark,sum,inputevents,intakeOutput,inputs,May be inconsistent across databases
+treatment,diuretic,Loop diuretic exposure before landmark,binary,S-AKI onset to landmark,any,prescriptions/inputevents,medication,medication,Potential kidney-response marker
+treatment,antibiotic,Antibiotic exposure before landmark,binary,S-AKI onset to landmark,any,antibiotic concept,medication,medication,Also part of suspected infection definition
+treatment,nephrotoxic_drug,Nephrotoxic drug exposure before landmark,binary,S-AKI onset to landmark,any,prescriptions,medication,medication,Optional; requires curated drug list
+missingness,creatinine_missing,No creatinine before landmark,binary,S-AKI onset to landmark,indicator,derived,derived,derived,Missingness indicator
+missingness,urine_output_missing,No urine output before landmark,binary,S-AKI onset to landmark,indicator,derived,derived,derived,Missingness indicator
+missingness,lactate_missing,No lactate before landmark,binary,S-AKI onset to landmark,indicator,derived,derived,derived,Missingness indicator
