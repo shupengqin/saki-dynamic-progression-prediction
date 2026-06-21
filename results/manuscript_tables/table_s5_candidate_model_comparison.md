@@ -1,0 +1,10 @@
+﻿## Table S5. Candidate Model Comparison
+
+| Evaluation setting | Model | N rows | Event rate | AUROC | AUPRC | Brier score | Calibration intercept | Calibration slope |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| MIMIC-IV internal test, cross-database predictors | logistic_l2 | 1393 | 46.8% | 0.766 | 0.756 | 0.195 | -0.096 | 0.859 |
+| MIMIC-IV internal test, cross-database predictors | xgboost | 1393 | 46.8% | 0.766 | 0.754 | 0.194 | 0.089 | 0.944 |
+| MIMIC-IV internal test, cross-database predictors | random_forest | 1393 | 46.8% | 0.762 | 0.746 | 0.196 | -0.039 | 1.239 |
+| MIMIC-IV internal test, cross-database predictors | lightgbm | 1393 | 46.8% | 0.759 | 0.739 | 0.200 | 0.039 | 0.665 |
+| MIMIC-III external with CRRT, cross-database logistic | logistic_l2 | 4062 | 43.4% | 0.728 | 0.626 | 0.216 | -0.204 | 0.483 |
+| MIMIC-III external with CRRT, cross-database XGBoost | xgboost_crossdb | 4062 | 43.4% | 0.761 | 0.703 | 0.197 | -0.230 | 0.866 |
