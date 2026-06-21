@@ -1,0 +1,10 @@
+Cohort,Recalibration variant,N rows,Observed event rate,Mean predicted risk,AUROC,AUPRC,Brier score,Calibration intercept,Calibration slope,Applied intercept,Applied slope
+MIMIC-IV internal test,unrecalibrated,1393,46.8%,44.8%,0.766,0.754,0.194,0.089,0.944,0.000,1.000
+MIMIC-IV internal test,intercept_only,1393,46.8%,46.8%,0.766,0.754,0.193,-0.010,0.944,0.105,1.000
+MIMIC-IV internal test,intercept_plus_slope,1393,46.8%,46.8%,0.766,0.754,0.193,0.000,1.000,0.089,0.944
+MIMIC-III external with CRRT,unrecalibrated,4062,43.4%,47.5%,0.761,0.703,0.197,-0.230,0.866,0.000,1.000
+MIMIC-III external with CRRT,intercept_only,4062,43.4%,43.4%,0.761,0.703,0.196,-0.037,0.866,-0.224,1.000
+MIMIC-III external with CRRT,intercept_plus_slope,4062,43.4%,43.4%,0.761,0.703,0.195,-0.000,1.000,-0.230,0.866
+SICdb sensitivity external,unrecalibrated,685,18.7%,60.7%,0.587,0.228,0.355,-1.651,0.284,0.000,1.000
+SICdb sensitivity external,intercept_only,685,18.7%,18.7%,0.587,0.228,0.162,-0.993,0.284,-2.321,1.000
+SICdb sensitivity external,intercept_plus_slope,685,18.7%,18.7%,0.587,0.228,0.150,0.002,1.001,-1.651,0.284
